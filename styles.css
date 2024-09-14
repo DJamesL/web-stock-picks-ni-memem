@@ -1,0 +1,13 @@
+.memcard{
+    outline: black solid 1px;
+}
+
+.memsec{
+    padding-top: 20px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.memfooter{
+    padding-top: 20px;
+}
