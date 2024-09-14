@@ -1,15 +1,14 @@
 const url = "https://phisix-api3.appspot.com/stocks/BPI.json"
-const url2 = "https://www.yahoo.com/manifest_desktop_us.json"
-const jsonData = '{"stock":[{"name":"Bank of the Philippine Islands","price":{"currency":"PHP","amount":123.40},"percent_change":0.73,"volume":616490,"symbol":"BPI"}],"as_of":"2024-09-14T00:00:00+08:00"}'
-var var2
+const pseiApiSourceUrl = "https://phisix-api3.appspot.com/stocks/"
+// const jsonData = '{"stock":[{"name":"Bank of the Philippine Islands","price":{"currency":"PHP","amount":123.40},"percent_change":0.73,"volume":616490,"symbol":"BPI"}],"as_of":"2024-09-14T00:00:00+08:00"}'
+// const stockListAndBuyBelowSource = 'https://docs.google.com/spreadsheets/d/1qT5CBz3SAYUEolL5hNXLME1Te9B9w3UtaUCKLT6embk';
+const sheetId = "1qT5CBz3SAYUEolL5hNXLME1Te9B9w3UtaUCKLT6embk";
+const sheetName = encodeURIComponent("Sheet1");
+const sheetURL = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${sheetName}`;
+var stockListAndBuyBelow
+let stock1Data
 
 class StockPick {
-  // companyName = "Mem Company";
-  // tickerCode = "MMC";
-  // currentPrice = 12.3;
-  // buyBelowPrice = 15.0;
-  // intrinsicValuePrice = 21.43;
-  // percentChange = -1.3;
   constructor(companyName,
     tickerCode,
     currentPrice,
@@ -53,26 +52,9 @@ class StockPick {
 async function abc(url) {
   var resp = await fetch(url);
   var jobj = await resp.json();
+  // stock1Data = jobj;
   return jobj;
 }
-
-// var stock1Data = JSON.parse(jsonData)
-// var jobj = abc(url).then((value) => stock1Data = value);
-// console.log(stock1Data.stock[0].name);
-// var stockData = stock1Data.stock[0];
-// const stockDataForDisplay = new StockPick(stockData.name, stockData.symbol, stockData.price.amount, 140.3, 190.2, stockData.percent_change);
-// $(".companyName").text(stockDataForDisplay.companyName);
-// $(".tickerCode").text(stockDataForDisplay.tickerCode);
-// $(".intrinsicValuePrice").text(stockDataForDisplay.intrinsicValuePrice);
-// $(".buyBelowPrice").text(stockDataForDisplay.buyBelowPrice);
-// $(".currentPrice").text(stockDataForDisplay.currentPrice);
-
-// function createCardContainer() {
-//   let cardContainer = $('<div class="grid grid-cols-1 gap-4 lg:grid-cols-4 lg:gap-8"></div>');
-//   cardContainer = cardContainer.append('<div class="overflow-hidden shadow rounded-lg memcard bg-gray-200"></div>');
-//   cardContainer = cardContainer.append('<div class="px-4 py-5 lg:p-6"></div>');
-// }
-
 
 function createCompanyNameChild(sectionParent) {
   // let cardContainerParent = $('<div class="grid grid-cols-1 gap-4 lg:grid-cols-4 lg:gap-8"></div>');
@@ -112,29 +94,84 @@ function updateAndCreateCardDetails(stockDataForDisplay, cardParent) {
   cardParent.append(currentPriceInCard);
 }
 
+const stocksUrlForApi = []
+
 const stockDataForDisplay = [
-  new StockPick("Mem Company", "MMC", 133.2, 140.3, 190.2, 3.4),
-  new StockPick("Guo Company", "GUO", 133.2, 140.3, 190.2, 3.4),
-  new StockPick("KOJC Company", "KOJC", 133.2, 140.3, 190.2, 3.4),
-  new StockPick("LIMA Company", "LIMA", 133.2, 140.3, 190.2, 3.4),
-  new StockPick("ALPHA Company", "ALPHA", 133.2, 140.3, 190.2, 3.4),
-  new StockPick("DELTA Company", "DELTA", 133.2, 140.3, 190.2, 3.4),
+  // new StockPick("Mem Company", "MMC", 133.2, 140.3, 190.2, 3.4),
+  // new StockPick("Guo Company", "GUO", 133.2, 140.3, 190.2, 3.4),
+  // new StockPick("KOJC Company", "KOJC", 133.2, 140.3, 190.2, 3.4),
+  // new StockPick("LIMA Company", "LIMA", 133.2, 140.3, 190.2, 3.4),
+  // new StockPick("ALPHA Company", "ALPHA", 133.2, 140.3, 190.2, 3.4),
+  // new StockPick("DELTA Company", "DELTA", 133.2, 140.3, 190.2, 3.4),
 ];
 
 const mainSection = $("#memCardParent");
 let cardContainerParent;
 
-for (i = 0; i < stockDataForDisplay.length; i++) {
-  console.log(stockDataForDisplay[i].companyName);
-  cardContainerParent = createCompanyNameChild(mainSection);
-  updateAndCreateCardDetails(stockDataForDisplay[i], cardContainerParent);
+
+const singleStockListAndBuyBelow = {
+  name: "NAME",
+  buy_below: 10.0
+}
+var buyBelowPriceList = []
+
+function handleResponse(csvText) {
+  let sheetObjects = csvToObjects(csvText);
+  stockListAndBuyBelow = sheetObjects;
+  for (i = 0; i < sheetObjects.length; i++) {
+    stocksUrlForApi.push(pseiApiSourceUrl + sheetObjects[i].TICKER + ".json");
+    buyBelowPriceList.push(sheetObjects[i].BUY_BELOW);
+  }
+  console.log(stocksUrlForApi.length);
+}
+
+function csvToObjects(csv) {
+  const csvRows = csv.split("\n");
+  const propertyNames = csvSplit(csvRows[0]);
+  let objects = [];
+  for (let i = 1, max = csvRows.length; i < max; i++) {
+    let thisObject = {};
+    let row = csvSplit(csvRows[i]);
+    for (let j = 0, max = row.length; j < max; j++) {
+      thisObject[propertyNames[j]] = row[j];
+    }
+    objects.push(thisObject);
+  }
+  return objects;
+}
+
+function csvSplit(row) {
+  return row.split(",").map((val) => val.substring(1, val.length - 1));
+}
+
+async function getGoogleSheetData(sheetURL) {
+  var response = await fetch(sheetURL);
+  var jobj = await response.text();
+  var jobj2 = await handleResponse(jobj);
+  return jobj2;
 }
 
 
+async function getApiData(stockUrl) {
+  var jobj = await abc(stockUrl).then(function (value) {
+    stock1Data = value;
+  });
+}
 
+(async () => {
+  await getGoogleSheetData(sheetURL);
+  // console.log(stocksUrlForApi.length);
+  for (i = 0; i < stocksUrlForApi.length; i++) {
+    await getApiData(stocksUrlForApi[i]);
+    //   console.log(stock1Data.stock[0].name);
+    stockDataForDisplay.push(new StockPick(stock1Data.stock[0].name, stock1Data.stock[0].symbol, stock1Data.stock[0].price.amount,
+      buyBelowPriceList[i], 190.2, stock1Data.stock[0].percent_change));
+  }
 
-
-
-// cardContainerChild.append(cardContainerGrandchild);
-// cardContainerParent.append(cardContainerChild);
-
+  console.log(stock1Data.stock[0].name);
+  for (i = 0; i < stockDataForDisplay.length; i++) {
+  // console.log(stockDataForDisplay[i].companyName);
+  cardContainerParent = createCompanyNameChild(mainSection);
+  updateAndCreateCardDetails(stockDataForDisplay[i], cardContainerParent);
+}
+})();
