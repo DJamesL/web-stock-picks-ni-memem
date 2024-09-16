@@ -78,19 +78,37 @@ function updateAndCreateCardDetails(stockDataForDisplay, cardParent) {
   tickerCodeInCard.addClass('tickerCode text-sm font-medium leading-5 text-gray-500 truncate');
   tickerCodeInCard.text(stockDataForDisplay.tickerCode);
 
-  let intrinsicValuePriceInCard = $('<div class="intrinsicValuePrice text-sm font-medium leading-5 text-gray-500 truncate"></div>');
-  intrinsicValuePriceInCard.text("Intrinsic Value: " + stockDataForDisplay.intrinsicValuePrice);
+  let percentChangeInCard = $('<div class="intrinsicValuePrice text-sm font-medium leading-5 truncate"></div>');
+  percentChangeInCard.text("Change: " + stockDataForDisplay.percentChange + "%");
+  if (stockDataForDisplay.percentChange > 0.0) {
+    percentChangeInCard.addClass('text-[#4F9B7E]');
+  }
+  else if (stockDataForDisplay.percentChange < 0.0) {
+    percentChangeInCard.addClass('text-[#F0412B]');
+  }
+  else {
+    percentChangeInCard.addClass('text-gray-500');
+  }
+
 
   let buyBelowPriceInCard = $('<div class="buyBelowPrice text-sm font-medium leading-5 text-gray-500 truncate"></div>');
   buyBelowPriceInCard.text("Buy Below: " + stockDataForDisplay.buyBelowPrice);
 
+
   let currentPriceInCard = $('<div class="currentPrice mt-1 text-xl font-semibold leading-9 text-gray-900"></div>');
   currentPriceInCard.text("Price: " + stockDataForDisplay.currentPrice);
 
+  if(stockDataForDisplay.currentPrice < stockDataForDisplay.buyBelowPrice){
+    cardParent.addClass('bg-[#66ebb9]');
+  }
+  else{
+    cardParent.addClass('bg-gray-200');
+  }
+
   cardParent.append(companyNameInCard);
   cardParent.append(tickerCodeInCard);
-  cardParent.append(intrinsicValuePriceInCard);
   cardParent.append(buyBelowPriceInCard);
+  cardParent.append(percentChangeInCard);
   cardParent.append(currentPriceInCard);
 }
 
@@ -106,6 +124,7 @@ const stockDataForDisplay = [
 ];
 
 const mainSection = $("#memCardParent");
+const loadingSpinner = $("#loadingSpinner");
 let cardContainerParent;
 
 
@@ -158,6 +177,8 @@ async function getApiData(stockUrl) {
   });
 }
 
+
+
 (async () => {
   await getGoogleSheetData(sheetURL);
   // console.log(stocksUrlForApi.length);
@@ -165,13 +186,14 @@ async function getApiData(stockUrl) {
     await getApiData(stocksUrlForApi[i]);
     //   console.log(stock1Data.stock[0].name);
     stockDataForDisplay.push(new StockPick(stock1Data.stock[0].name, stock1Data.stock[0].symbol, stock1Data.stock[0].price.amount,
-      buyBelowPriceList[i], 190.2, stock1Data.stock[0].percent_change));
+      buyBelowPriceList[i], 0.0, stock1Data.stock[0].percent_change));
   }
 
   console.log(stock1Data.stock[0].name);
   for (i = 0; i < stockDataForDisplay.length; i++) {
-  // console.log(stockDataForDisplay[i].companyName);
-  cardContainerParent = createCompanyNameChild(mainSection);
-  updateAndCreateCardDetails(stockDataForDisplay[i], cardContainerParent);
-}
+    // console.log(stockDataForDisplay[i].companyName);
+    cardContainerParent = createCompanyNameChild(mainSection);
+    updateAndCreateCardDetails(stockDataForDisplay[i], cardContainerParent);
+  }
+  loadingSpinner.remove();
 })();

@@ -23,26 +23,61 @@
       </nav>
     </section>
     <section class="memsec">
-      <div id="memCardParent" class="grid grid-cols-1 gap-4 lg:grid-cols-4 lg:gap-8">
-        <!-- <div class="overflow-hidden shadow rounded-lg memcard bg-gray-200">
+      <div id="loadingSpinner" class="flex items-center justify-center w-full h-screen ">
+        <div
+          class="flex justify-center items-center space-x-1 text-xl text-gray-700"
+        >
+          <svg
+            fill="none"
+            class="w-6 h-6 animate-spin"
+            viewBox="0 0 32 32"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              clip-rule="evenodd"
+              d="M15.165 8.53a.5.5 0 01-.404.58A7 7 0 1023 16a.5.5 0 011 0 8 8 0 11-9.416-7.874.5.5 0 01.58.404z"
+              fill="currentColor"
+              fill-rule="evenodd"
+            />
+          </svg>
+
+          <div>Loading ...</div>
+        </div>
+      </div>
+      <div
+        id="memCardParent"
+        class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4 lg:gap-8"
+      >
+        <!-- <div class="overflow-hidden shadow rounded-lg memcard bg-[#66ebb9]">
           <div class="px-4 py-5 lg:p-6">
-            <div class="companyName text-sm font-medium leading-5 text-gray-500 truncate">
+            <div
+              class="companyName text-sm font-medium leading-5 text-gray-500 truncate"
+            >
               Company Name
             </div>
-            <div class="tickerCode text-sm font-medium leading-5 text-gray-500 truncate">
+            <div
+              class="tickerCode text-sm font-medium leading-5 text-gray-500 truncate"
+            >
               Ticker
             </div>
-            <div class="intrinsicValuePrice text-sm font-medium leading-5 text-gray-500 truncate">
-              Intrinsic Value
+ 
+            <div
+              class="intrinsicValuePrice text-sm font-medium leading-5 text-[#F0412B] truncate"
+            >
+              Intrinsic Value: 300
             </div>
-            <div class="buyBelowPrice text-sm font-medium leading-5 text-gray-500 truncate">
+            <div
+              class="buyBelowPrice text-sm font-medium leading-5 text-gray-500 truncate"
+            >
               Buy Target
             </div>
-            <div class="currentPrice mt-1 text-xl font-semibold leading-9 text-gray-900">
+            <div
+              class="currentPrice mt-1 text-xl font-semibold leading-9 text-gray-900"
+            >
               currentPrice
             </div>
-          </div>   -->
-        </div>
+          </div>
+        </div> -->
       </div>
     </section>
     <section class="memfooter">
@@ -104,9 +139,12 @@
       </footer>
     </section>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-csv/1.0.21/jquery.csv.min.js"
-    integrity="sha512-Y8iWYJDo6HiTo5xtml1g4QqHtl/PO1w+dmUpQfQSOTqKNsMhExfyPN2ncNAe9JuJUSKzwK/b6oaNPop4MXzkwg=="
-    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/jquery-csv/1.0.21/jquery.csv.min.js"
+      integrity="sha512-Y8iWYJDo6HiTo5xtml1g4QqHtl/PO1w+dmUpQfQSOTqKNsMhExfyPN2ncNAe9JuJUSKzwK/b6oaNPop4MXzkwg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
     <script src="./src/pages/home/home.js" charset="UTF-8"></script>
   </body>
 </html>
