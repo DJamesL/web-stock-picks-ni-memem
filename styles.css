@@ -11,3 +11,11 @@
 .memfooter{
     padding-top: 20px;
 }
+
+/* #loadingSpinner{
+    visibility: hidden;
+} */
+
+#fakecard{
+    visibility: hidden;
+}
