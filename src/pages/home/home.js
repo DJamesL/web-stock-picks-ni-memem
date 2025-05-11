@@ -107,6 +107,8 @@ function updateAndCreateCardDetails(stockDataForDisplay, cardParent) {
     percentChangeInCard.addClass('text-gray-500');
   }
 
+  let intriMarginInCard = $('<div class="intrinsicValuePrice text-sm font-medium leading-5 truncate"></div>');
+  intriMarginInCard.text("Margin: " + ((1-(stockDataForDisplay.currentPrice/stockDataForDisplay.buyBelowPrice))*100).toFixed(2) + "%");
 
   let buyBelowPriceInCard = $('<div class="buyBelowPrice text-sm font-medium leading-5 text-gray-500 truncate"></div>');
   buyBelowPriceInCard.text("Buy Below: " + stockDataForDisplay.buyBelowPrice);
@@ -127,6 +129,7 @@ function updateAndCreateCardDetails(stockDataForDisplay, cardParent) {
   cardParent.append(buyBelowPriceInCard);
   cardParent.append(percentChangeInCard);
   cardParent.append(currentPriceInCard);
+  cardParent.append(intriMarginInCard);
   cardParent.append(buyBelowSourceInCard);
   cardParent.append(dividendInCard);
 }
